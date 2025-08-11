@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science for Action</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+        }
+        
+        /* Sidebar and main content layout */
+        #sidebar {
+            background-color: #ef4444;
+            box-shadow: 10px 0 20px -5px rgba(0, 0, 0, 0.1);
+            margin-top: .5rem;
+            margin-bottom: .5rem;
+            margin-left: .5rem;
+        }
+
+        /* Enhanced Animation Styles */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Enhanced Dropdown animations */
+        #actionDropdown, #topicDropdown {
+            animation: fadeIn 0.3s ease-out forwards;
+            transform-origin: top center;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        #actionDropdown.show, #topicDropdown.show {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* Enhanced Selection box animations */
+        .selection-box {
+            animation: slideIn 0.3s ease-out forwards;
+            transform-origin: top center;
+        }
+
+        /* Enhanced Button animations */
+        .action-btn, .topic-btn {
+            transition: all 0.2s ease;
+            transform-origin: center;
+        }
+
+        /* Enhanced Card animations */
+        .card-animation {
+            animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+
+        /* Button hover effects */
+        .btn-hover-effect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        #actionDropdown .flex, #topicDropdown .flex {
+            margin-top: 1rem;
+        }
+
+        /* Fixed header for search summary */
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f3f4f6;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Button states */
+        .btn-inactive {
+            background-color: transparent;
+            color: white;
+        }
+        .btn-active {
+            background-color: white;
+            color: #dc2626;
+            animation: pulse 0.5s ease;
+        }
+        
+        /* Hidden elements */
+        .content-section.hidden {
+            display: none;
+        }
+
+        .hidden-step {
+            display: none;
+        }
+
+        /* Selection boxes */
+        .selection-box {
+            background-color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selection-box-content-wrapper {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .selection-box-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #374151;
+            margin-right: 0.5rem;
+        }
+
+        .selection-box-content {
+            font-size: 1rem;
+            color: white;
+            background-color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        .selection-box-edit {
+            color: #9CA3AF;
+            cursor: pointer;
+            margin-left: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .selection-box-edit:hover {
+            color: #6B7280;
+            transform: rotate(15deg);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            #sidebar {
+                width: 100%;
+                position: relative;
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .main-content.reduced-margin {
+                margin-left: 0;
+            }
+            
+            #footer {
+                left: 0;
+            }
+            
+            .selection-stack {
+                margin-bottom: 1rem;
+            }
+            
+            .selection-box {
+                padding: 0.75rem 1rem;
+            }
+            
+            .selection-box-content {
+                font-size: 0.875rem;
+                padding: 0.25rem 0.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #sidebar {
+                padding: 1.5rem;
+            }
+            
+            #sidebar .text-4xl {
+                font-size: 1.75rem;
+                line-height: 1.2;
+            }
+            
+            .card-animation h3 {
+                font-size: 1.25rem;
+            }
+            
+            .card-animation p {
+                font-size: 0.875rem;
+            }
+            
+            .card-animation img {
+                height: 150px;
+            }
+            
+            .bg-white.p-6.rounded-xl {
+                padding: 1rem;
+            }
+            
+            input.w-full.py-4.pl-6.pr-12 {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            #sidebar .flex-grow {
+                margin-bottom: 1rem;
+            }
+            
+            .flex.p-1.bg-red-800.rounded-full {
+                flex-direction: column;
+                gap: 0.25rem;
+                padding: 0.25rem;
+            }
+            
+            .flex.p-1.bg-red-800.rounded-full button {
+                width: 100%;
+            }
+            
+            .action-btn, .topic-btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .selection-box {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .selection-box-content-wrapper {
+                width: 100%;
+            }
+            
+            #footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+            
+            #footer button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="flex flex-col lg:flex-row flex-grow">
+        <aside id="sidebar" class="bg-red-600 rounded-xl text-white p-8 w-full lg:w-[26%] lg:fixed lg:inset-y-0 lg:left-0 flex flex-col justify-between">
+            <div class="flex justify-start">
+                <span class="text-2xl font-semibold">science action</span>
+            </div>
+            <div class="flex-grow flex items-end mb-4">
+                <div class="text-2xl lg:text-4xl font-bold leading-tight">Science for people who give a shit</div>
+            </div>
+            
+            <div class="flex p-1 bg-red-800 rounded-full flex-col sm:flex-row">
+                <button id="exploreBtn" data-target="exploreContent" class="flex-1 py-2 px-4 rounded-full font-bold text-sm btn-inactive whitespace-nowrap">explore</button>
+                <button id="actionToolBtn" data-target="actionToolContent" class="flex-1 py-2 px-4 rounded-full font-bold text-sm btn-active whitespace-nowrap min-w-max">action tool</button>
+                <button id="profileBtn" data-target="profileContent" class="flex-1 py-2 px-4 rounded-full font-bold text-sm btn-inactive whitespace-nowrap">profile</button>
+            </div>
+        </aside>
+
+        <main id="mainContent" class="main-content flex-grow p-4 lg:p-8 lg:ml-[26%]">
+            
+            <div id="actionToolContent" class="content-section">
+                <div id="inputContainer" class="max-w-[53rem] mx-auto mb-8">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Tell us what you want to</h2>
+                    <div id="selectionStack" class="selection-stack">
+                        <!-- Boxes will be appended here -->
+                    </div>
+
+                    <!-- Step 1: Action Selection -->
+                    <div id="step1">
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md mb-4">
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="actionInput"
+                                    placeholder="Choose an option or type"
+                                    class="w-full py-3 md:py-4 pl-6 pr-12 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    readonly
+                                >
+                                <div id="actionSearchIcon" class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div id="actionDropdown" class="show">
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">be heard</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">get</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">buy</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">donate</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">fund</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">invest</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">get educated</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">get funded</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">purchase</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">get help</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">organize</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">raise money</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">volunteer</button>
+                                    <button class="action-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">give the middle finger</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Topic Selection -->
+                    <div id="step2" class="hidden-step">
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md mb-4">
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="topicInput"
+                                    placeholder="Choose the topic"
+                                    class="w-full py-3 md:py-4 pl-6 pr-12 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    readonly
+                                >
+                                <div id="topicSearchIcon" class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div id="topicDropdown">
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">data ethics</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">workers</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">climate policy</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">foodchain workers</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">clean energy</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">energy storage</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">public health</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">insurance</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">healthy food</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">poverty</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">climate</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">AI ethics</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">COVID</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">electric vehicles</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">maternal health</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">supplements</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">newborns</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">trans rights</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">data privacy</button>
+                                    <button class="topic-btn bg-[#d7e6e5] text-gray-700 py-2 px-4 rounded-full text-sm hover:bg-red-500 hover:text-white transition-colors duration-200 btn-hover-effect">agriculture</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Location Selection -->
+                    <div id="step3" class="hidden-step">
+                        <div class="bg-white p-4 md:p-6 rounded-xl shadow-md mb-4">
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="locationInput"
+                                    placeholder="Type zip code or city/state"
+                                    class="w-full py-3 md:py-4 pl-6 pr-12 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                >
+                                <div id="locationSearchIcon" class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="searchSummaryContainer" class="max-w-3xl mx-auto mb-8 hidden fixed-header">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-md mb-4 flex items-center justify-between">
+                        <div id="searchSummaryText" class="text-base md:text-lg text-gray-600"></div>
+                        <button id="editSearchBtn" class="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-transform hover:scale-110">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="resultsContainer" class="space-y-6 max-w-3xl mx-auto">
+                </div>
+            </div>
+
+            <div id="exploreContent" class="content-section hidden">
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Explore Content</h2>
+                <p class="text-gray-600 mt-2">This is the content for the 'explore' section.</p>
+            </div>
+
+            <div id="profileContent" class="content-section hidden">
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Profile Content</h2>
+                <p class="text-gray-600 mt-2">This is the content for the 'profile' section.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer" class="sm:fixed bottom-0 left-0 lg:left-[27%] right-0 flex flex-col sm:flex-row justify-end items-center gap-2 sm:gap-1 p-3 sm:p-4 shadow-md hidden w-full sm:w-auto bg-gray-100">
+        <button id="resetBtn" class="bg-transparent text-gray-600 py-2 px-4 sm:px-6 rounded-full font-bold w-full sm:w-auto transition-colors hover:bg-gray-200">reset</button>
+        <button id="showResultsBtn" class="bg-gray-300 text-gray-600 py-2 px-4 sm:px-6 rounded-full font-bold w-full sm:w-auto transition-colors hover:bg-gray-400">Show results</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputContainer = document.getElementById('inputContainer');
+            const searchSummaryContainer = document.getElementById('searchSummaryContainer');
+            const searchSummaryText = document.getElementById('searchSummaryText');
+            const editSearchBtn = document.getElementById('editSearchBtn');
+            const actionInput = document.getElementById('actionInput');
+            const topicInput = document.getElementById('topicInput');
+            const locationInput = document.getElementById('locationInput');
+
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+
+            const actionDropdown = document.getElementById('actionDropdown');
+            const topicDropdown = document.getElementById('topicDropdown');
+            const actionButtons = document.querySelectorAll('.action-btn');
+            const topicButtons = document.querySelectorAll('.topic-btn');
+            
+            const selectionStack = document.getElementById('selectionStack');
+            const footer = document.getElementById('footer');
+            const resetBtn = document.getElementById('resetBtn');
+            const showResultsBtn = document.getElementById('showResultsBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const navButtons = document.querySelectorAll('.flex.p-1.bg-red-800 button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mainContent = document.getElementById('mainContent');
+            const actionToolContent = document.getElementById('actionToolContent');
+
+            // Sample data
+            const actionsData = [
+                {
+                    title: "Clean Industrial Heat Tax Credit",
+                    description: "We need smart policies that will drive investments into industrial innovation to clean up the industrial sector. One way to do this is by providing a clean heat production tax credit to incentivize manufacturers to switch to clean energy sources.",
+                    action: "be heard",
+                    topic: "climate policy",
+                    zipCode: "70032",
+                    image: "https://images.unsplash.com/photo-1605152276897-4f618f831968?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    imageAlt: "Industrial factory"
+                },
+                {
+                    title: "NY Climate Change Superfund Act",
+                    description: "New York's Climate Change Superfund Act (S.2129-B / A.3351-B) establishes a cost recovery program to require companies that have emitted significant greenhouse gases to bear a share of the costs of infrastructure adaptation.",
+                    action: "be heard",
+                    topic: "climate policy",
+                    zipCode: "70032",
+                    image: "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    imageAlt: "Greenhouse"
+                },
+                {
+                    title: "Heat Action Platform",
+                    description: "The climate is a 'change' which means the way we prepare for it needs to as well. This platform is a tool for city officials, practitioners, and financial institutions to find guidance on building resilience and reducing carbon emissions.",
+                    action: "be heard",
+                    topic: "climate policy",
+                    zipCode: "70032",
+                    image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    imageAlt: "City skyline"
+                },
+                {
+                    title: "Clean Energy Tax Credit",
+                    description: "A tax credit to encourage homeowners to install solar panels and other clean energy systems.",
+                    action: "be heard",
+                    topic: "climate policy",
+                    zipCode: "70032",
+                    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    imageAlt: "Solar panels on a roof"
+                },
+                {
+                    title: "Support Local Farms",
+                    description: "A program to help local farms get funding and resources to produce healthy, sustainable food for their communities.",
+                    action: "be heard",
+                    topic: "climate policy",
+                    zipCode: "70032",
+                    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                    imageAlt: "Farmer's market with fresh produce"
+                }
+            ];
+
+            // Intersection Observer for card animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            // Create selection box with animation
+            function createSelectionBox(type, content) {
+                const box = document.createElement('div');
+                box.className = 'selection-box';
+                box.style.opacity = '0';
+                box.style.transform = 'translateX(-20px)';
+                
+                let title = '';
+                if (type === 'action') {
+                    title = 'I want to';
+                } else if (type === 'topic') {
+                    title = 'about';
+                } else if (type === 'location') {
+                    title = 'in';
+                }
+                
+                box.innerHTML = `
+                    <div class="selection-box-content-wrapper">
+                        <div class="selection-box-title">${title}</div>
+                        <div class="selection-box-content">${content}</div>
+                    </div>
+                    <div class="selection-box-edit" data-type="${type}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </div>
+                `;
+                
+                // Trigger animation after the element is added to DOM
+                setTimeout(() => {
+                    box.style.opacity = '1';
+                    box.style.transform = 'translateX(0)';
+                }, 10);
+                
+                return box;
+            }
+
+            // Toggle dropdown with animation
+            function toggleDropdown(dropdown, show) {
+                if (show) {
+                    dropdown.style.maxHeight = '500px';
+                    dropdown.style.opacity = '1';
+                    dropdown.classList.add('show');
+                } else {
+                    dropdown.style.maxHeight = '0';
+                    dropdown.style.opacity = '0';
+                    dropdown.classList.remove('show');
+                }
+            }
+
+            // Reset all selections
+            function resetAll() {
+                selectionStack.innerHTML = '';
+                step1.classList.remove('hidden-step');
+                step2.classList.add('hidden-step');
+                step3.classList.add('hidden-step');
+                searchSummaryContainer.classList.add('hidden');
+                footer.classList.add('hidden');
+                resultsContainer.innerHTML = '';
+                actionInput.value = '';
+                topicInput.value = '';
+                locationInput.value = '';
+                actionButtons.forEach(btn => {
+                    btn.classList.remove('bg-red-500', 'text-white', 'transform', 'scale-105');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                topicButtons.forEach(btn => {
+                    btn.classList.remove('bg-red-500', 'text-white', 'transform', 'scale-105');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                toggleDropdown(actionDropdown, true);
+                toggleDropdown(topicDropdown, false);
+                inputContainer.classList.remove('hidden');
+                
+                // Scroll to top on mobile
+                if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+
+            // Show results with animation
+            function showResults() {
+                const selectedAction = actionInput.value;
+                const selectedTopic = topicInput.value;
+                const locationValue = locationInput.value;
+
+                inputContainer.classList.add('hidden');
+                searchSummaryContainer.classList.remove('hidden');
+                footer.classList.add('hidden');
+                    
+                const summaryParts = [];
+                if (selectedAction) {
+                    summaryParts.push(selectedAction);
+                }
+                if (selectedTopic) {
+                    summaryParts.push(selectedTopic);
+                }
+                if (locationValue) {
+                    summaryParts.push(locationValue);
+                }
+
+                // Update search summary
+                searchSummaryText.innerHTML = `
+                    <p class="text-sm text-gray-500">I want to</p>
+                    <p class="text-lg font-semibold">${summaryParts.join(' - ')}</p>
+                `;
+
+                const filteredResults = actionsData.filter(item => {
+                    const matchesAction = !selectedAction || item.action.toLowerCase() === selectedAction.toLowerCase();
+                    const matchesTopic = !selectedTopic || item.topic.toLowerCase() === selectedTopic.toLowerCase();
+                    const matchesLocation = !locationValue || item.zipCode === locationValue;
+                    return matchesAction && matchesTopic && matchesLocation;
+                });
+                    
+                resultsContainer.innerHTML = '';
+
+                if (filteredResults.length > 0) {
+                    filteredResults.forEach((item, index) => {
+                        const cardHtml = `
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden card-animation" style="opacity: 0; transform: translateY(20px); transition-delay: ${index * 0.1}s">
+                                <div class="relative">
+                                    <img src="${item.image}" alt="${item.imageAlt}" class="w-full h-48 object-cover">
+                                </div>
+                                <div class="p-4 md:p-6">
+                                    <h3 class="text-xl md:text-2xl font-bold mb-2 leading-tight">
+                                        <span class="block">${item.title.split(' ').slice(0, 2).join(' ')}</span>
+                                        <span class="block">${item.title.split(' ').slice(2).join(' ')}</span>
+                                    </h3>
+                                    <p class="text-gray-600 mb-4">${item.description}</p>
+                                    <button class="border border-gray-400 text-gray-600 py-1 px-3 rounded-full text-sm hover:bg-gray-100 transition-all duration-200 transform hover:scale-105">${item.action}</button>
+                                </div>
+                            </div>
+                        `;
+                        resultsContainer.insertAdjacentHTML('beforeend', cardHtml);
+                        
+                        // Animate card in
+                        setTimeout(() => {
+                            const card = resultsContainer.lastElementChild;
+                            if (card) {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }
+                        }, 10);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p class="text-center text-gray-500">No results found for your selections. Try a different combination.</p>';
+                }
+                
+                // Scroll to results if on mobile
+                if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+
+            // Initial state: show only step 1
+            resetAll();
+
+            // Handle action button selection
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const selectedAction = this.textContent;
+                    actionInput.value = selectedAction;
+                    
+                    // Animate button selection
+                    actionButtons.forEach(btn => {
+                        btn.classList.remove('bg-red-500', 'text-white', 'transform', 'scale-105');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    this.classList.add('bg-red-500', 'text-white', 'transform', 'scale-105');
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    
+                    // Create and append action selection box with animation
+                    const actionBox = createSelectionBox('action', selectedAction);
+                    selectionStack.appendChild(actionBox);
+                    
+                    // Transition to step 2 with animation
+                    step1.classList.add('hidden-step');
+                    step2.classList.remove('hidden-step');
+                    toggleDropdown(actionDropdown, false);
+                    toggleDropdown(topicDropdown, true);
+                    
+                    // Reset button animation after a delay
+                    setTimeout(() => {
+                        this.classList.remove('transform', 'scale-105');
+                    }, 300);
+                    
+                    // Scroll to next step on mobile
+                    if (window.innerWidth < 1024) {
+                        setTimeout(() => {
+                            step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                });
+            });
+            
+            // Handle topic button selection
+            topicButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const selectedTopic = this.textContent;
+                    topicInput.value = selectedTopic;
+
+                    // Animate button selection
+                    topicButtons.forEach(btn => {
+                        btn.classList.remove('bg-red-500', 'text-white', 'transform', 'scale-105');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    this.classList.add('bg-red-500', 'text-white', 'transform', 'scale-105');
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+
+                    // Create and append topic selection box with animation
+                    const topicBox = createSelectionBox('topic', selectedTopic);
+                    selectionStack.appendChild(topicBox);
+                    
+                    // Transition to step 3 with animation
+                    step2.classList.add('hidden-step');
+                    step3.classList.remove('hidden-step');
+                    footer.classList.remove('hidden');
+                    
+                    // Reset button animation after a delay
+                    setTimeout(() => {
+                        this.classList.remove('transform', 'scale-105');
+                    }, 300);
+                    
+                    // Scroll to next step on mobile
+                    if (window.innerWidth < 1024) {
+                        setTimeout(() => {
+                            step3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                });
+            });
+
+            // Handle location input (when user types and presses Enter)
+            locationInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const locationValue = this.value.trim();
+                    if (locationValue) {
+                        // Create and append location selection box with animation
+                        const locationBox = createSelectionBox('location', locationValue);
+                        selectionStack.appendChild(locationBox);
+                        
+                        // Animate the show results button
+                        showResultsBtn.classList.remove('bg-gray-300');
+                        showResultsBtn.classList.add('bg-red-600', 'text-white', 'transform', 'scale-105');
+                        
+                        setTimeout(() => {
+                            showResultsBtn.classList.remove('transform', 'scale-105');
+                        }, 300);
+                        
+                        // Show results with animation
+                        showResults();
+                    }
+                }
+            });
+
+            // Handle edit buttons in selection boxes
+            selectionStack.addEventListener('click', function(e) {
+                const editBtn = e.target.closest('.selection-box-edit');
+                if (editBtn) {
+                    const type = editBtn.dataset.type;
+                    
+                    // Remove all boxes after the one being edited
+                    const boxes = Array.from(selectionStack.children);
+                    const boxIndex = boxes.indexOf(editBtn.closest('.selection-box'));
+                    for (let i = boxIndex; i < boxes.length; i++) {
+                        selectionStack.removeChild(boxes[i]);
+                    }
+                    
+                    // Show the appropriate step
+                    if (type === 'action') {
+                        resetAll();
+                    } else if (type === 'topic') {
+                        step1.classList.add('hidden-step');
+                        step2.classList.remove('hidden-step');
+                        step3.classList.add('hidden-step');
+                        topicInput.value = '';
+                        topicButtons.forEach(btn => {
+                            btn.classList.remove('bg-red-500', 'text-white');
+                            btn.classList.add('bg-gray-200', 'text-gray-700');
+                        });
+                        toggleDropdown(topicDropdown, true);
+                        footer.classList.add('hidden');
+                    } else if (type === 'location') {
+                        step1.classList.add('hidden-step');
+                        step2.classList.add('hidden-step');
+                        step3.classList.remove('hidden-step');
+                        locationInput.value = '';
+                        footer.classList.remove('hidden');
+                    }
+                    
+                    // Scroll to the appropriate step on mobile
+                    if (window.innerWidth < 1024) {
+                        setTimeout(() => {
+                            if (type === 'action') {
+                                step1.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            } else if (type === 'topic') {
+                                step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            } else if (type === 'location') {
+                                step3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }, 100);
+                    }
+                }
+            });
+
+            // "Show results" button click event
+            showResultsBtn.addEventListener('click', showResults);
+
+            // "Edit search" button click event
+            editSearchBtn.addEventListener('click', function() {
+                resetAll();
+                inputContainer.classList.remove('hidden');
+                
+                // Scroll to top on mobile
+                if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                }
+            });
+
+            // "Reset" button click event
+            resetBtn.addEventListener('click', function() {
+                resetAll();
+                
+                // Scroll to top on mobile
+                if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                }
+            });
+
+            // Button group click functionality
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    navButtons.forEach(btn => {
+                        btn.classList.remove('btn-active');
+                        btn.classList.add('btn-inactive');
+                    });
+                    this.classList.remove('btn-inactive');
+                    this.classList.add('btn-active');
+
+                    const targetId = this.dataset.target;
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+
+                    if (targetId === 'actionToolContent') {
+                        mainContent.classList.add('lg:ml-[26%]');
+                    } else {
+                        mainContent.classList.remove('lg:ml-[26%]');
+                    }
+                });
+            });
+
+            // Initialize the page
+            actionToolContent.classList.remove('hidden');
+            document.getElementById('actionToolBtn').classList.add('btn-active');
+            document.getElementById('actionToolBtn').classList.remove('btn-inactive');
+            mainContent.classList.add('lg:ml-[26%]');
+        });
+    </script>
+</body>
+</html>
